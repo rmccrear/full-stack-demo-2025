@@ -1,4 +1,7 @@
 {
     "workbench.colorTheme": "Red",
-    "git.openRepositoryInParentFolders": "always"
+    "git.openRepositoryInParentFolders": "always",
+    "cSpell.words": [
+        "SUPABASE"
+    ]
 }
