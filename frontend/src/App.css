@@ -1,0 +1,7 @@
+.nav {
+  display: flex;
+}
+
+.nav > div {
+  border: solid salmon 1px;
+}
