@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Home from './pages/Home';
 import MyMeals from './pages/MyMeals';
+import MyEvents from './pages/MyEvents';
 import SignIn from './pages/SignIn';
 
 import './App.css'
@@ -17,6 +18,8 @@ function App() {
 
   if(currentPage === "my-meals") {
     pageElement = <MyMeals navigate={navigate} user={user} />;
+  } else if (currentPage === "my-events") {
+    pageElement = <MyEvents navigate={navigate} user={user} />;
   } else if (currentPage === "sign-in") {
     pageElement = <SignIn navigate={navigate} user={user} setUser={setUser} />;
   }
@@ -27,6 +30,7 @@ function App() {
       <nav>
         <div className="brand">Potluck</div>
         <div className="nav-item" onClick={()=>navigate("my-meals")}>My Meals</div>
+        <div className="nav-item" onClick={()=>navigate("my-events")}>My Events</div>
         <div className="nav-item" onClick={()=>navigate("sign-in")}>Sign In</div>
       </nav>
       <p>Welcome {user && user.email}</p>
