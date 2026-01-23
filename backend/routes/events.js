@@ -1,21 +1,29 @@
 import { Router } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
-const MICROSERVICE_API_KEY = process.env.MICROSERVICE_API_KEY;
+import supabase from "../supabase.js";
+import { getWeather } from "../utils/get-weather.js";
 
 const router = Router();
 
-
-const eventData = [
-    { id: 1, location: "New Orleans", name: "Birthday Party", date: "2026-01-30" },
-    { id: 2, location: "Memphis", name: "Wedding", date: "2026-01-25" },
-    { id: 3, location: "Memphis", name: "Groundhog Day Party", date: "2026-02-07" },
-]
-
 // events
-router.get("/", (req, res) => {
-    res.json(eventData);
+router.get("/", async (req, res) => {
+    const { data, error } = await supabase
+        .from("potluck_events")
+        .select("id, location, event_name, date")
+        .order("date", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Failed to fetch events." });
+    }
+
+    const events = data.map((event) => ({
+        id: event.id,
+        location: event.location,
+        name: event.event_name,
+        date: event.date,
+    }));
+
+    res.json(events);
 });
 
 // example /events/2
@@ -24,33 +32,39 @@ router.get("/:id", async (req, res) => {
     const eventId = parseInt(req.params.id, 10);
     console.log(eventId)
 
+    const { data, error } = await supabase
+        .from("potluck_events")
+        .select("id, location, event_name, date")
+        .eq("id", eventId)
+        .maybeSingle();
 
-    // TODO: switch to Supabase
-    let temp = null;
-    for (let i = 0; i < eventData.length; i++) {
-        console.log(eventData[i]);
-        if (eventId === eventData[i].id) {
-            temp = eventData[i];
-        }
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Failed to fetch event." });
     }
-    const event = temp; // TODO: const event = supabase
+
+    if (!data) {
+        return res.status(404).json({ error: "Event not found." });
+    }
+
+    const event = {
+        id: data.id,
+        location: data.location,
+        name: data.event_name,
+        date: data.date,
+    };
 
     const date = event.date;
     const location = event.location;
 
     // Access microservice
-    const weatherUrl = `http://localhost:3001/weather-for-date/${date}/${location}`;
-    console.log(weatherUrl);
-    const response = await fetch(weatherUrl, {
-        headers: {
-            "Content-Type": "application/json",
-            "x-api-key": MICROSERVICE_API_KEY
-        }
-    });
-    const weatherData = await response.json();
-    
-    event.weather = weatherData;
-
+    try {
+        const weatherData = await getWeather(date, location);
+        event.weather = weatherData;
+    } catch (error) {
+        console.log(error);
+        event.weather = {error: "cannot fetch weather for " + location + " " + date};
+    }
     res.json(event);
 });
 
