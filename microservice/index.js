@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 const PORT = process.env.PORT || 3001;
+const API_KEY = process.env.MY_API_KEY;
 const app = express();
 
 const weather_api_key = process.env.WEATHER_API_KEY;
@@ -19,6 +20,14 @@ const weatherCache = {
 app.get("/weather-for-date/:date/:location", async (req, res) => {
     const date = req.params.date;
     const location = req.params.location;
+
+    const header_key = req.headers["x-api-key"];
+    if(header_key !== API_KEY) {
+        return res.json({
+            error: "incorrect or missing API_KEY"
+        });
+    }
+
     console.log(weatherCache);
     let data = null;
     if (weatherCache[location]) {
