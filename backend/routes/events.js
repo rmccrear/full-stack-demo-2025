@@ -32,6 +32,7 @@ router.get("/:id", async (req, res) => {
     const eventId = parseInt(req.params.id, 10);
     console.log(eventId)
 
+    // Access Subabase
     const { data, error } = await supabase
         .from("potluck_events")
         .select("id, location, event_name, date")
