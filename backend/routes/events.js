@@ -6,6 +6,7 @@ const router = Router();
 
 // events
 router.get("/", async (req, res) => {
+    console.log("get events")
     const { data, error } = await supabase
         .from("potluck_events")
         .select("id, location, event_name, date")

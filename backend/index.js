@@ -1,10 +1,12 @@
 import express from "express";
+import cors from "cors";
 
 import eventRouter from "./routes/events.js"
 
 const PORT = 3000;
 
 const app = express();
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("Hello World");
