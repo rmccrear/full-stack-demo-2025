@@ -4,9 +4,9 @@ const router = Router();
 
 
 const eventData = [
-    {id: 1, location: "New Orleans", name: "Birthday Party", date: "01/20/2026"},
-    {id: 2, location: "Memphis", name: "Wedding", date: "01/20/2026"},
-    {id: 3, location: "Memphis", name: "Groundhog Day Party", date: "01/20/2026"},
+    { id: 1, location: "New Orleans", name: "Birthday Party", date: "2026-01-30" },
+    { id: 2, location: "Memphis", name: "Wedding", date: "2026-01-25" },
+    { id: 3, location: "Memphis", name: "Groundhog Day Party", date: "2026-02-07" },
 ]
 
 // events
@@ -16,18 +16,34 @@ router.get("/", (req, res) => {
 
 // example /events/2
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
     const eventId = parseInt(req.params.id, 10);
     console.log(eventId)
-    console.log();
+
+
+    // TODO: switch to Supabase
     let temp = null;
-    for(let i=0; i<eventData.length; i++){
+    for (let i = 0; i < eventData.length; i++) {
         console.log(eventData[i]);
-        if(eventId === eventData[i].id) {
+        if (eventId === eventData[i].id) {
             temp = eventData[i];
         }
     }
-    res.json(temp);
+    const event = temp; // TODO: const event = supabase
+
+    const date = event.date;
+    const location = event.location;
+
+    // Access microservice
+    const weatherUrl = `http://localhost:3001/weather-for-date/${date}/${location}`;
+    console.log(weatherUrl);
+    const response = await fetch(weatherUrl);
+    const weatherData = await response.json();
+    
+    event.weather = weatherData;
+
+    res.json(event);
 });
+
 
 export default router;
