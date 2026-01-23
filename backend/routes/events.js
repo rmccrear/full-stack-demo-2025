@@ -1,4 +1,8 @@
 import { Router } from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
+const MICROSERVICE_API_KEY = process.env.MICROSERVICE_API_KEY;
 
 const router = Router();
 
@@ -37,7 +41,12 @@ router.get("/:id", async (req, res) => {
     // Access microservice
     const weatherUrl = `http://localhost:3001/weather-for-date/${date}/${location}`;
     console.log(weatherUrl);
-    const response = await fetch(weatherUrl);
+    const response = await fetch(weatherUrl, {
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": MICROSERVICE_API_KEY
+        }
+    });
     const weatherData = await response.json();
     
     event.weather = weatherData;
