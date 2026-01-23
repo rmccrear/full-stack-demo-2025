@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const app = express();
 
 const weather_api_key = process.env.WEATHER_API_KEY;
@@ -14,7 +14,6 @@ const weatherCache = {
         days: [{ datetime: "2026-01-20", temp: 99, conditions: "Raining" }]
     },
 }
-
 
 
 app.get("/weather-for-date/:date/:location", async (req, res) => {
@@ -39,7 +38,6 @@ app.get("/weather-for-date/:date/:location", async (req, res) => {
     const weatherData = {
         temp: weatherForDay.temp,
         conditions: weatherForDay.conditions,
-
     }
 
     return res.json(weatherData);
