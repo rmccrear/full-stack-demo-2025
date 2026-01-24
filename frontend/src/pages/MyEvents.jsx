@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import supabase from "../utils/supabase";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -6,12 +7,23 @@ export default function MyEvents({ navigate, user }) {
     const [events, setEvents] = useState([]);
     useEffect(() => {
         async function getMyEvents() {
-            const response = await fetch(`${baseUrl}/events`);
-            const data = await response.json();
+            const { data, error } = await supabase.auth.getSession();
+            console.log(data, error);
+            const token = data.session.access_token;
+            console.log(token);
+
+            const response = await fetch(`${baseUrl}/events`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+            });
+
+            const eventData = await response.json();
             if (response.ok) {
-                setEvents(data);
+                setEvents(eventData);
             } else {
-                console.log(data);
+                console.log(eventData);
             }
         }
         getMyEvents();

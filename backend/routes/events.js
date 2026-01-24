@@ -6,10 +6,28 @@ const router = Router();
 
 // events
 router.get("/", async (req, res) => {
+    
     console.log("get events")
+
+    const authHeader = req.headers.authorization;
+    console.log(authHeader)
+    // const arr = authHeader.split(" ")
+    // const JWTTOken = arr[1];
+    if(!authHeader) {
+        res.status(401)
+        return res.json({error: "No Authorization header supplied"})
+    }
+    const JWTToken = authHeader.split(" ")[1];
+    const authResult = await supabase.auth.getUser(JWTToken);
+    const userData = authResult.data;
+    const userError = authResult.error;
+    console.log(userData, userError)
+    const user = userData.user;
+
     const { data, error } = await supabase
         .from("potluck_events")
         .select("id, location, event_name, date")
+        .eq("user_id", user.id)
         .order("date", { ascending: true });
 
     if (error) {
