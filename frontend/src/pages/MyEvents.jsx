@@ -11,8 +11,10 @@ export default function MyEvents({ navigate, user }) {
             console.log(data, error);
             const token = data.session.access_token;
             console.log(token);
-
-            const response = await fetch(`${baseUrl}/events`, {
+            // const url = "http://localhost:3000/events"
+            // const url = "https://full-stack-demo-2025.onrender.com/events"
+            const url = `${baseUrl}/events`;
+            const response = await fetch(url, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + token

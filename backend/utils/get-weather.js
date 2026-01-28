@@ -2,9 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const MICROSERVICE_API_KEY = process.env.MICROSERVICE_API_KEY;
-
+const baseUrl = process.env.MICROSERVICE_URL;
 export async function getWeather(date, location) {
-    const weatherUrl = `http://localhost:3001/weather-for-date/${date}/${location}`;
+    // const weatherUrl = `http://localhost:3001/weather-for-date/${date}/${location}`;
+    // const weatherUrl = `https://full-stack-demo-2025-microservice.onrender.com/weather-for-date/${date}/${location}`;
+    const weatherUrl = `${baseUrl}/weather-for-date/${date}/${location}`;
     console.log(weatherUrl);
     const response = await fetch(weatherUrl, {
         headers: {
